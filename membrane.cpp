@@ -38,6 +38,9 @@ Membrane::~Membrane()
 
 
 
+
+
+
 //! [1]
 void Membrane::fillGraphProxy()
 {
@@ -112,4 +115,107 @@ void Membrane::changeTheme(int theme)
 {
     m_graph->activeTheme()->setType(Q3DTheme::Theme(theme));
 }
+
+
+
+void Membrane::setBlackToYellowGradient()
+{
+    //! [7]
+    QLinearGradient gr;
+    gr.setColorAt(0.0, Qt::black);
+    gr.setColorAt(0.33, Qt::blue);
+    gr.setColorAt(0.67, Qt::red);
+    gr.setColorAt(1.0, Qt::yellow);
+
+    m_graph->seriesList().at(0)->setBaseGradient(gr);
+    m_graph->seriesList().at(0)->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
+    //! [7]
+}
+
+void Membrane::setGreenToRedGradient()
+{
+    QLinearGradient gr;
+    gr.setColorAt(0.0, Qt::darkGreen);
+    gr.setColorAt(0.5, Qt::yellow);
+    gr.setColorAt(0.8, Qt::red);
+    gr.setColorAt(1.0, Qt::darkRed);
+
+    m_graph->seriesList().at(0)->setBaseGradient(gr);
+    m_graph->seriesList().at(0)->setColorStyle(Q3DTheme::ColorStyleRangeGradient);
+}
+
+
+
+
+
+
+void Membrane::adjustXMin(int min)
+{
+    float minX = m_stepX * float(min) + m_rangeMinX;
+
+    int max = m_axisMaxSliderX->value();
+    if (min >= max) {
+        max = min + 1;
+        m_axisMaxSliderX->setValue(max);
+    }
+    float maxX = m_stepX * max + m_rangeMinX;
+
+    setAxisXRange(minX, maxX);
+}
+
+void Membrane::adjustXMax(int max)
+{
+    float maxX = m_stepX * float(max) + m_rangeMinX;
+
+    int min = m_axisMinSliderX->value();
+    if (max <= min) {
+        min = max - 1;
+        m_axisMinSliderX->setValue(min);
+    }
+    float minX = m_stepX * min + m_rangeMinX;
+
+    setAxisXRange(minX, maxX);
+}
+
+void Membrane::adjustZMin(int min)
+{
+    float minZ = m_stepZ * float(min) + m_rangeMinZ;
+
+    int max = m_axisMaxSliderZ->value();
+    if (min >= max) {
+        max = min + 1;
+        m_axisMaxSliderZ->setValue(max);
+    }
+    float maxZ = m_stepZ * max + m_rangeMinZ;
+
+    setAxisZRange(minZ, maxZ);
+}
+
+void Membrane::adjustZMax(int max)
+{
+    float maxX = m_stepZ * float(max) + m_rangeMinZ;
+
+    int min = m_axisMinSliderZ->value();
+    if (max <= min) {
+        min = max - 1;
+        m_axisMinSliderZ->setValue(min);
+    }
+    float minX = m_stepZ * min + m_rangeMinZ;
+
+    setAxisZRange(minX, maxX);
+}
+
+
+
+//! [5]
+void Membrane::setAxisXRange(float min, float max)
+{
+    m_graph->axisX()->setRange(min, max);
+}
+
+void Membrane::setAxisZRange(float min, float max)
+{
+    m_graph->axisZ()->setRange(min, max);
+}
+
 

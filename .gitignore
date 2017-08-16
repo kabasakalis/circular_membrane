@@ -1,0 +1,39 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Build dir
+build*
+!builder.*
+/bin
+/lib
+/install
+lldb*
+core
+# Qt cache
+.qmake*
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+
+
+
+# IDE project files
+*.sublime-project
+*.sublime-workspace
+
+
+# Local config unix
+.localconfig
+
+# Wiki
+wiki

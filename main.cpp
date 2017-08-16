@@ -1,5 +1,5 @@
 #include "membrane.h"
-#include <QApplication>
+// #include <QApplication>
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QWidget>
@@ -15,19 +15,11 @@
 #include <QtGui/QPainter>
 #include <QtGui/QScreen>
 
-//#include <boost/math/special_functions/bessel.hpp>
-#include <boost/math/special_functions/factorials.hpp>
+#include <boost/math/special_functions/bessel.hpp>
 
 int main(int argc, char **argv)
 {
     //! [0]
-//  auto root = boost::math::cyl_bessel_j_zero(0, 1);
-
-  boost::math::double_factorial<double>(2);
-
-
-
-
     QApplication app(argc, argv);
     Q3DSurface *graph = new Q3DSurface();
     QWidget *container = QWidget::createWindowContainer(graph);
@@ -57,20 +49,23 @@ int main(int argc, char **argv)
 
     widget->setWindowTitle(QStringLiteral("Normal modes of Circular Membrane Vibration."));
 
+
+
     QGroupBox *modelGroupBox = new QGroupBox(QStringLiteral("Model"));
 
+    //Vibration Button and Layout
     QRadioButton *VibrationModelRB = new QRadioButton(widget);
     VibrationModelRB->setText(QStringLiteral("Vibration"));
     VibrationModelRB->setChecked(false);
 
-//    QRadioButton *heightMapModelRB = new QRadioButton(widget);
-//    heightMapModelRB->setText(QStringLiteral("Height Map"));
-//    heightMapModelRB->setChecked(false);
 
     QVBoxLayout *modelVBox = new QVBoxLayout;
     modelVBox->addWidget(VibrationModelRB);
     modelGroupBox->setLayout(modelVBox);
 
+
+
+//Selection
     QGroupBox *selectionGroupBox = new QGroupBox(QStringLiteral("Selection Mode"));
 
     QRadioButton *modeNoneRB = new QRadioButton(widget);
@@ -83,7 +78,7 @@ int main(int argc, char **argv)
 
     QRadioButton *modeSliceRowRB = new QRadioButton(widget);
     modeSliceRowRB->setText(QStringLiteral("Row Slice"));
-    modeSliceRowRB->setChecked(false);
+    modeSliceRowRB->setChecked(true);
 
     QRadioButton *modeSliceColumnRB = new QRadioButton(widget);
     modeSliceColumnRB->setText(QStringLiteral("Column Slice"));
@@ -96,6 +91,8 @@ int main(int argc, char **argv)
     selectionVBox->addWidget(modeSliceColumnRB);
     selectionGroupBox->setLayout(selectionVBox);
 
+
+   //Slider
     QSlider *axisMinSliderX = new QSlider(Qt::Horizontal, widget);
     axisMinSliderX->setMinimum(0);
     axisMinSliderX->setTickInterval(1);
@@ -171,41 +168,54 @@ int main(int argc, char **argv)
 
     Membrane *modifier = new Membrane(graph);
 
-        QObject::connect(VibrationModelRB, &QRadioButton::toggled,
+    // modifier-> enableGraph(true);
+
+
+    QObject::connect(VibrationModelRB, &QRadioButton::toggled,
                      modifier, &Membrane::enableGraph);
 
 
-//    QObject::connect(modeNoneRB, &QRadioButton::toggled,
-//                     modifier, &Membrane::toggleModeNone);
-//    QObject::connect(modeItemRB,  &QRadioButton::toggled,
-//                     modifier, &Membrane::toggleModeItem);
-//    QObject::connect(modeSliceRowRB,  &QRadioButton::toggled,
-//                     modifier, &Membrane::toggleModeSliceRow);
-//    QObject::connect(modeSliceColumnRB,  &QRadioButton::toggled,
-//                     modifier, &Membrane::toggleModeSliceColumn);
-//    QObject::connect(axisMinSliderX, &QSlider::valueChanged,
-//                     modifier, &Membrane::adjustXMin);
-//    QObject::connect(axisMaxSliderX, &QSlider::valueChanged,
-//                     modifier, &Membrane::adjustXMax);
-//    QObject::connect(axisMinSliderZ, &QSlider::valueChanged,
-//                     modifier, &Membrane::adjustZMin);
-//    QObject::connect(axisMaxSliderZ, &QSlider::valueChanged,
-//                     modifier, &Membrane::adjustZMax);
+
+   QObject::connect(modeNoneRB, &QRadioButton::toggled,
+                    modifier, &Membrane::toggleModeNone);
+   QObject::connect(modeItemRB,  &QRadioButton::toggled,
+                    modifier, &Membrane::toggleModeItem);
+   QObject::connect(modeSliceRowRB,  &QRadioButton::toggled,
+                    modifier, &Membrane::toggleModeSliceRow);
+   QObject::connect(modeSliceColumnRB,  &QRadioButton::toggled,
+                    modifier, &Membrane::toggleModeSliceColumn);
+   QObject::connect(axisMinSliderX, &QSlider::valueChanged,
+                    modifier, &Membrane::adjustXMin);
+   QObject::connect(axisMaxSliderX, &QSlider::valueChanged,
+                    modifier, &Membrane::adjustXMax);
+   QObject::connect(axisMinSliderZ, &QSlider::valueChanged,
+                    modifier, &Membrane::adjustZMin);
+   QObject::connect(axisMaxSliderZ, &QSlider::valueChanged,
+                    modifier, &Membrane::adjustZMax);
     QObject::connect(themeList, SIGNAL(currentIndexChanged(int)),
                      modifier, SLOT(changeTheme(int)));
-//    QObject::connect(gradientBtoYPB, &QPushButton::pressed,
-//                     modifier, &Membrane::setBlackToYellowGradient);
-//    QObject::connect(gradientGtoRPB, &QPushButton::pressed,
-//                     modifier, &Membrane::setGreenToRedGradient);
+   QObject::connect(gradientBtoYPB, &QPushButton::pressed,
+                    modifier, &Membrane::setBlackToYellowGradient);
+   QObject::connect(gradientGtoRPB, &QPushButton::pressed,
+                    modifier, &Membrane::setGreenToRedGradient);
 
     modifier->setAxisMinSliderX(axisMinSliderX);
     modifier->setAxisMaxSliderX(axisMaxSliderX);
     modifier->setAxisMinSliderZ(axisMinSliderZ);
     modifier->setAxisMaxSliderZ(axisMaxSliderZ);
 
-//    sqrtSinModelRB->setChecked(true);
-//    modeItemRB->setChecked(true);
+
+    VibrationModelRB->setChecked(true);
+    modeItemRB->setChecked(true);
     themeList->setCurrentIndex(2);
+
+//    sqrtSinModelRB->setChecked(true);
+
+
+     modifier-> enableGraph(true);
+
+
+
 
     return app.exec();
 }
