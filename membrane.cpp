@@ -4,6 +4,7 @@
 #include <QtDataVisualization/Q3DTheme>
 #include <QtDataVisualization/QValue3DAxis>
 #include <QtMath>
+#include <QtTimer>
 
 #include <boost/math/special_functions/bessel.hpp>
 
@@ -35,6 +36,10 @@ Membrane::Membrane(Q3DSurface *surface) : m_graph(surface) {
   //! [0]
 
   fillGraphProxy();
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(update( m_membraneSeries)));
+    timer->start(1000);
 }
 
 Membrane::~Membrane() { delete m_graph; }
@@ -119,6 +124,49 @@ void Membrane::enableGraph(bool enable) {
 void Membrane::changeTheme(int theme) {
   m_graph->activeTheme()->setType(Q3DTheme::Theme(theme));
 }
+
+void Membrane::update( QSurface3DSeries series) {
+
+
+if (series && m_data.size()) {
+        // Each iteration uses data from a different cached array
+        m_index++;
+        if (m_index > m_data.count() - 1)
+            m_index = 0;
+
+        QSurfaceDataArray array = m_data.at(m_index);
+        int newRowCount = array.size();
+        int newColumnCount = array.at(0)->size();
+
+        // If the first time or the dimensions of the cache array have changed,
+        // reconstruct the reset array
+        if (m_resetArray || series->dataProxy()->rowCount() != newRowCount
+                || series->dataProxy()->columnCount() != newColumnCount) {
+            m_resetArray = new QSurfaceDataArray();
+            m_resetArray->reserve(newRowCount);
+            for (int i(0); i < newRowCount; i++)
+                m_resetArray->append(new QSurfaceDataRow(newColumnCount));
+        }
+
+        // Copy items from our cache to the reset array
+        for (int i(0); i < newRowCount; i++) {
+            const QSurfaceDataRow &sourceRow = *(array.at(i));
+            QSurfaceDataRow &row = *(*m_resetArray)[i];
+            for (int j(0); j < newColumnCount; j++)
+                row[j].setPosition(sourceRow.at(j).position());
+        }
+
+        // Notify the proxy that data has changed
+        series->dataProxy()->resetArray(m_resetArray);
+    }
+
+
+
+}
+
+
+
+
 
 void Membrane::setBlackToYellowGradient() {
   //! [7]

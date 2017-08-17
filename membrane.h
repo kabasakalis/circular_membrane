@@ -52,6 +52,7 @@ public:
 
  public Q_SLOTS:
     void changeTheme(int theme);
+    void update(QSurface3DSeries series);
 
 
 private:
