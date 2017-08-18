@@ -167,9 +167,13 @@ int main(int argc, char **argv)
 
     widget->show();
 
-    Membrane *modifier = new Membrane(graph);
+
+
+    Solution* solution = new Solution(50, 100, 20.0f, 1);
+    Membrane* modifier = new Membrane(graph, solution );
 
     // modifier-> enableGraph(true);
+
 
 
     QObject::connect(VibrationModelRB, &QRadioButton::toggled,
@@ -213,7 +217,7 @@ int main(int argc, char **argv)
 //    sqrtSinModelRB->setChecked(true);
 
 
-     modifier-> enableGraph(true);
+     // modifier-> enableGraph(true);
 
 
 

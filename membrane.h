@@ -9,6 +9,8 @@
 #include <QtDataVisualization/QSurface3DSeries>
 #include <QtWidgets/QSlider>
 
+#include "solution.h"
+
 using namespace QtDataVisualization;
 
 //namespace Ui {
@@ -20,7 +22,7 @@ class Membrane : public QObject
   Q_OBJECT
 
 public:
-  explicit Membrane(Q3DSurface *surface);
+  explicit Membrane(Q3DSurface* surface, Solution* solution);
   ~Membrane();
 
    void enableGraph(bool enable);
@@ -52,8 +54,8 @@ public:
 
  public Q_SLOTS:
     void changeTheme(int theme);
-    void update(QSurface3DSeries series);
-
+    // void updateGraph(QSurface3DSeries series);
+    void updateTimeSlice();
 
 private:
   Q3DSurface *m_graph;
@@ -69,9 +71,13 @@ private:
   float m_stepX;
   float m_stepZ;
 
+
   void setAxisXRange(float min, float max);
   void setAxisZRange(float min, float max);
   void fillGraphProxy();
+
+  int m_timeSliceIndex{0};
+  Solution* m_solution;
 
 //  Ui::Membrane *ui;
 

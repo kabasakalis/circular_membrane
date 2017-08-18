@@ -10,22 +10,21 @@ class Solution : public QObject
 {
     Q_OBJECT
 public:
-    explicit Solution(int sampleCount, int timeSlicesCount, float radius, float wave_speed, QObject *parent = 0);
+    explicit Solution(int sampleCount, int timeSlicesCount, float radius,
+                      float wave_speed, QObject *parent = 0);
     virtual ~Solution();
 
     //! [0]
-public Q_SLOTS:
-    void generateData(int cacheCount, int rowCount, int columnCount,
-                      float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);
 
-    void update(QSurface3DSeries *series);
-    // void generate_row_data(QSurface3DSeries *series);
-    void generate_row_data(  QSurfaceDataArray* dataArray, int bessel_order_n,int root_order_m );
-    //! [0]
+QVector<QSurfaceDataArray*> getTimeSlices() ;
+
+public Q_SLOTS:
+
 private:
     void clearData();
+    void generateData( float bessel_order_n,int root_order_m );
 
-    QVector<QSurfaceDataArray> m_timeSlices;
+    QVector<QSurfaceDataArray*> m_timeSlices;
     int m_index;
     QSurfaceDataArray* m_resetArray;
     float  m_radius;
