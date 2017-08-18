@@ -22,7 +22,7 @@ Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
 
 {
 
-    generateData(0.0, 1);
+    generateData(2.0, 10);
 
   //! [4]
   // qRegisterMetaType<QSurface3DSeries *>();
@@ -60,7 +60,7 @@ void Solution::generateData(float bessel_order_n, int root_order_m) {
 
 
     const float sampleMinT = 0.0f;
-    const float sampleMaxT = (2 * M_PI) / (m_wave_speed * bessel_root);
+    const float sampleMaxT = (2 * M_PI * m_radius) / (m_wave_speed * bessel_root);
     float stepT = (sampleMaxT - sampleMinT) / float(m_timeSlicesCount - 1);
     float t = qMin(sampleMaxT, (i * stepT + sampleMinT));
     auto temporal = qCos(m_wave_speed * (bessel_root / m_radius) * t);
@@ -79,7 +79,7 @@ void Solution::generateData(float bessel_order_n, int root_order_m) {
         float theta = qMin(sampleMaxTheta, (k * stepTheta + sampleMinTheta));
 
         auto angular = qCos(bessel_order_n * theta);
-        auto z = radial * angular * temporal * 4;
+        auto z = radial * angular * temporal ;
           (*newRow)[index++].setPosition(QVector3D(theta, z, r));
       }
 

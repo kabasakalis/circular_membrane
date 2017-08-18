@@ -38,7 +38,7 @@ Membrane::Membrane(Q3DSurface *surface, Solution* solution)
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(updateTimeSlice()));
-  timer->start(200);
+  timer->start(100);
 
   // fillGraphProxy();
 }
@@ -129,7 +129,7 @@ void Membrane::changeTheme(int theme) {
 void Membrane::updateTimeSlice() {
   auto timeSlices = m_solution->getTimeSlices();
   m_timeSliceIndex++;
-  if (m_timeSliceIndex > timeSlices.count() - 1) m_timeSliceIndex = 0;
+  if (m_timeSliceIndex > timeSlices.count() - 2) m_timeSliceIndex = 0;
   // m_membraneProxy->resetArray(timeSlices.at(m_timeSliceIndex));
   m_membraneProxy->resetArray( timeSlices.at(m_timeSliceIndex));
   // m_membraneProxy->resetArray( Qt::black );

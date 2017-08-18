@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 
 
 
-    Solution* solution = new Solution(50, 100, 20.0f, 1);
+    Solution* solution = new Solution(25, 16, 20.0f, 400);
     Membrane* modifier = new Membrane(graph, solution );
 
     // modifier-> enableGraph(true);
