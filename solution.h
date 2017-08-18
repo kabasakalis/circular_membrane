@@ -25,7 +25,7 @@ public Q_SLOTS:
 private:
     void clearData();
 
-    QVector<QSurfaceDataArray> timeSlices;
+    QVector<QSurfaceDataArray> m_timeSlices;
     int m_index;
     QSurfaceDataArray* m_resetArray;
     float  m_radius;
