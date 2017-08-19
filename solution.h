@@ -25,7 +25,6 @@ private:
     void generateData( float bessel_order_n,int root_order_m );
 
     QVector<QSurfaceDataArray*> m_timeSlices;
-    int m_index;
     QSurfaceDataArray* m_resetArray;
     float  m_radius;
     float  m_wave_speed;

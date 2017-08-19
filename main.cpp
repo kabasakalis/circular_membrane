@@ -14,6 +14,8 @@
 #include <QtWidgets/QMessageBox>
 #include <QtGui/QPainter>
 #include <QtGui/QScreen>
+#include <Q3DScene>
+
 
 #include <boost/math/special_functions/bessel.hpp>
 
@@ -23,7 +25,14 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
     Q3DSurface *graph = new Q3DSurface();
     graph-> setPolar(true);
+
+    // auto cam = *(graph -> scene())->setActiveCamera(new Q3DCamera());
+       // *(graph -> scene())->activeCamera()->cameraPreset() = 1;
+
+       graph -> scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetDirectlyBelow)  ;
+
     QWidget *container = QWidget::createWindowContainer(graph);
+
     //! [0]
 
     if (!graph->hasContext()) {
@@ -169,7 +178,9 @@ int main(int argc, char **argv)
 
 
 
-    Solution* solution = new Solution(25, 16, 20.0f, 400);
+    Solution* solution = new Solution(25, 20, 20.0f, 400);
+
+
     Membrane* modifier = new Membrane(graph, solution );
 
     // modifier-> enableGraph(true);

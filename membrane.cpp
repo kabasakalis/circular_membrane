@@ -1,11 +1,10 @@
 #include "membrane.h"
 
 #include <QtCore/qmath.h>
+#include <QTimer>
 #include <QtDataVisualization/Q3DTheme>
 #include <QtDataVisualization/QValue3DAxis>
 #include <QtMath>
-#include <QTimer>
-
 #include <boost/math/special_functions/bessel.hpp>
 
 using namespace QtDataVisualization;
@@ -25,8 +24,11 @@ const float B = 1.0f;
 const float C = 1.0f;
 const float D = 1.0f;
 
-Membrane::Membrane(Q3DSurface *surface, Solution* solution)
-    : m_graph(surface), m_solution(solution) {
+Membrane::Membrane(Q3DSurface *surface, Solution *solution)
+    : m_graph(surface),
+      m_solution(solution),
+      m_timeSlices(solution->getTimeSlices()),
+      m_resetArray(0) {
   m_graph->setAxisX(new QValue3DAxis);
   m_graph->setAxisY(new QValue3DAxis);
   m_graph->setAxisZ(new QValue3DAxis);
@@ -35,6 +37,7 @@ Membrane::Membrane(Q3DSurface *surface, Solution* solution)
   m_membraneProxy = new QSurfaceDataProxy();
   m_membraneSeries = new QSurface3DSeries(m_membraneProxy);
   //! [0]
+
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(updateTimeSlice()));
@@ -62,7 +65,6 @@ void Membrane::fillGraphProxy() {
     for (int j = 0; j < sampleCountX; j++) {
       float x = qMin(sampleMaxX, (j * stepX + sampleMinX));
 
-      auto c = 1;
       auto bessel_order_n = 0.0f;
       auto root_order_m = 2;
       auto bessel_root =
@@ -127,12 +129,28 @@ void Membrane::changeTheme(int theme) {
 }
 
 void Membrane::updateTimeSlice() {
-  auto timeSlices = m_solution->getTimeSlices();
   m_timeSliceIndex++;
-  if (m_timeSliceIndex > timeSlices.count() - 2) m_timeSliceIndex = 0;
-  // m_membraneProxy->resetArray(timeSlices.at(m_timeSliceIndex));
-  m_membraneProxy->resetArray( timeSlices.at(m_timeSliceIndex));
-  // m_membraneProxy->resetArray( Qt::black );
+  if (m_timeSliceIndex > m_timeSlices.size() - 1) m_timeSliceIndex = 0;
+
+  qDebug() << "upda" << m_timeSlices.size();
+  qDebug() << "m_timeSliceIndex" << m_timeSliceIndex;
+  qDebug() << "timeSlices cap" << m_timeSlices.capacity();
+
+  auto qsurface_data_array = m_timeSlices.at(m_timeSliceIndex);
+  int sampleCount = qsurface_data_array->size();
+
+  m_resetArray = new QSurfaceDataArray();
+  m_resetArray->reserve(sampleCount);
+  for (int i(0); i < sampleCount; i++)
+    m_resetArray->append(new QSurfaceDataRow(sampleCount));
+
+  for (int i(0); i < sampleCount; i++) {
+    const QSurfaceDataRow &sourceRow = *(qsurface_data_array->at(i));
+    QSurfaceDataRow &row = *(*m_resetArray)[i];
+    for (int j(0); j < sampleCount; j++)
+      row[j].setPosition(sourceRow.at(j).position());
+  }
+  m_membraneProxy->resetArray(m_resetArray);
 }
 
 void Membrane::setBlackToYellowGradient() {

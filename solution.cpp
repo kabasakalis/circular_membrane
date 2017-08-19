@@ -13,7 +13,6 @@ constexpr const float sampleMinR = 0.0f;
 Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
                    float wave_speed, QObject *parent)
     : QObject(parent),
-      m_index(-1),
       m_resetArray(0),
       m_radius(radius),
       m_wave_speed(wave_speed),
@@ -22,7 +21,7 @@ Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
 
 {
 
-    generateData(2.0, 10);
+    generateData(0.0, 1);
 
   //! [4]
   // qRegisterMetaType<QSurface3DSeries *>();
@@ -37,7 +36,10 @@ void Solution::generateData(float bessel_order_n, int root_order_m) {
       clearData();
       auto bessel_root = boost::math::cyl_bessel_j_zero(bessel_order_n, root_order_m);
       // Create slices
-      m_timeSlices.resize(m_timeSlicesCount);
+
+      m_timeSlices.reserve( m_timeSlicesCount);
+      // m_timeSlices.resize(m_timeSlicesCount);
+
         // const float sampleMinT = 0.0f;
     //initialize slices with datarows
     // for (int i(0); i < m_timeSlicesCount; i++) {
@@ -92,6 +94,9 @@ void Solution::generateData(float bessel_order_n, int root_order_m) {
 
  QVector<QSurfaceDataArray*>
 Solution::getTimeSlices( )  {
+      // qDebug() << "size:" << m_timeSlices.size();
+      // qDebug() << "cont" <<  m_timeSlices.count();
+
 return m_timeSlices;
 }
 

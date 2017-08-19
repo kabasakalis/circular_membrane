@@ -8,7 +8,7 @@
 #include <QtDataVisualization/QHeightMapSurfaceDataProxy>
 #include <QtDataVisualization/QSurface3DSeries>
 #include <QtWidgets/QSlider>
-
+#include <atomic>
 #include "solution.h"
 
 using namespace QtDataVisualization;
@@ -22,7 +22,7 @@ class Membrane : public QObject
   Q_OBJECT
 
 public:
-  explicit Membrane(Q3DSurface* surface, Solution* solution);
+  explicit Membrane(Q3DSurface* surface, Solution* solution );
   ~Membrane();
 
    void enableGraph(bool enable);
@@ -57,6 +57,7 @@ public:
     // void updateGraph(QSurface3DSeries series);
     void updateTimeSlice();
 
+    // QVector<QSurfaceDataArray*> getTimeSlices() ;
 private:
   Q3DSurface *m_graph;
   QSurfaceDataProxy *m_membraneProxy;
@@ -72,13 +73,15 @@ private:
   float m_stepZ;
 
 
+
   void setAxisXRange(float min, float max);
   void setAxisZRange(float min, float max);
   void fillGraphProxy();
 
-  int m_timeSliceIndex{0};
+  std::atomic<int> m_timeSliceIndex{0};
   Solution* m_solution;
-
+  QVector<QSurfaceDataArray*> m_timeSlices;
+  QSurfaceDataArray* m_resetArray;
 //  Ui::Membrane *ui;
 
 
