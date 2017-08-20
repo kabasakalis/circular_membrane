@@ -10,6 +10,7 @@
 #include <QtWidgets/QSlider>
 #include <atomic>
 #include "solution.h"
+#include "qt_helpers.h"
 
 using namespace QtDataVisualization;
 
@@ -29,6 +30,10 @@ public:
 
 //   void enableVibrationMode(size_t bessel_kind, size_t root);
 
+
+
+
+// static  QSurfaceDataArray* newSurfaceDataArrayFromSource(QSurfaceDataArray* source_surface_data_array);
 
 //     //! [0]
  void toggleModeNone() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionNone); }
@@ -77,6 +82,7 @@ private:
   void setAxisXRange(float min, float max);
   void setAxisZRange(float min, float max);
   void fillGraphProxy();
+
 
   std::atomic<int> m_timeSliceIndex{0};
   Solution* m_solution;

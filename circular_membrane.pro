@@ -32,11 +32,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         membrane.cpp \
-        solution.cpp
+        solution.cpp \
+        qt_helpers.cpp
 
 HEADERS += \
         membrane.h \
         solution.h
+        qt_helpers.h
 
 FORMS += \
         membrane.ui
+
+
+RESOURCES += membrane.qrc
+
+

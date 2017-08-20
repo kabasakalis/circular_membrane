@@ -25,11 +25,9 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
     Q3DSurface *graph = new Q3DSurface();
     graph-> setPolar(true);
+    // graph->setFlipHorizontalGrid(true);
 
-    // auto cam = *(graph -> scene())->setActiveCamera(new Q3DCamera());
-       // *(graph -> scene())->activeCamera()->cameraPreset() = 1;
-
-       graph -> scene()->activeCamera()->setCameraPreset(Q3DCamera::CameraPresetDirectlyBelow)  ;
+       // graph -> scene()->activeCamera()->setCameraPreset(Q3DCamera::Q3DCamera::CameraPresetBehindBelow)  ;
 
     QWidget *container = QWidget::createWindowContainer(graph);
 
@@ -178,9 +176,7 @@ int main(int argc, char **argv)
 
 
 
-    Solution* solution = new Solution(25, 20, 20.0f, 400);
-
-
+    Solution* solution = new Solution(25,50, 20.0f, 400);
     Membrane* modifier = new Membrane(graph, solution );
 
     // modifier-> enableGraph(true);

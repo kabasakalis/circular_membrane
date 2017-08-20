@@ -8,103 +8,89 @@ using namespace QtDataVisualization;
 constexpr const float sampleMinTheta = 0.0f;
 constexpr const float sampleMaxTheta = 2 * M_PI;
 constexpr const float sampleMinR = 0.0f;
-// constexpr const float sampleMaxR = 20.0f;
 
 Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
-                   float wave_speed, QObject *parent)
+                   float wave_speed, QObject* parent)
     : QObject(parent),
       m_resetArray(0),
       m_radius(radius),
       m_wave_speed(wave_speed),
       m_sampleCount(sampleCount),
-      m_timeSlicesCount(timeSlicesCount)
+      m_timeSlicesCount(timeSlicesCount),
+      m_sampleMaxR(radius),
+      m_stepR{(radius - sampleMinR) / float(sampleCount - 1)},
+      m_stepTheta{(sampleMaxTheta - sampleMinTheta) / float(sampleCount - 1)}
 
 {
-
-    generateData(0.0, 1);
-
-  //! [4]
-  // qRegisterMetaType<QSurface3DSeries *>();
-  //! [4]
+  generateData(6.0, 3);
 }
 
 Solution::~Solution() { clearData(); }
 
-//! [0]
+float Solution::radial_solution(float r, float bessel_root,
+                                int bessel_order_n) {
+  return boost::math::cyl_bessel_j(bessel_order_n,
+                                   (bessel_root / m_radius) * r);
+}
+
+float Solution::angular_solution(float theta, float bessel_order_n) {
+  return qCos(bessel_order_n * theta);
+}
+
+float Solution::temporal_solution(float t, float bessel_root) {
+  return qCos(m_wave_speed * (bessel_root / m_radius) * t);
+}
+
+float Solution::get_bessel_root(float bessel_order_n, int root_order_m) {
+  return boost::math::cyl_bessel_j_zero(bessel_order_n, root_order_m);
+}
+
 void Solution::generateData(float bessel_order_n, int root_order_m) {
   if (!m_timeSlicesCount || !m_sampleCount) return;
-      clearData();
-      auto bessel_root = boost::math::cyl_bessel_j_zero(bessel_order_n, root_order_m);
-      // Create slices
+  clearData();
+  auto bessel_root = get_bessel_root(bessel_order_n, root_order_m);
+  const float sampleMinT = 0.0f;
+  const float sampleMaxT = (2 * M_PI * m_radius) / (m_wave_speed * bessel_root);
+  float stepT = (sampleMaxT - sampleMinT) / float(m_timeSlicesCount - 1);
+  m_timeSlices.reserve(m_timeSlicesCount);
+  QSurfaceDataArray* base_surface_data_array = new QSurfaceDataArray;
+  for (int j(0); j < m_sampleCount; j++) {
+    QSurfaceDataRow* newRow = new QSurfaceDataRow(m_sampleCount);
+    float r = qMin(m_sampleMaxR, (j * m_stepR + sampleMinR));
+    auto radial = radial_solution(r, bessel_root, bessel_order_n);
+    int index = 0;
+    for (int k = 0; k < m_sampleCount; k++) {
+      float theta = qMin(sampleMaxTheta, (k * m_stepTheta + sampleMinTheta));
+      auto angular = angular_solution(theta, bessel_order_n);
+      auto z = radial * angular;
+      (*newRow)[index++].setPosition(QVector3D(theta, z, r));
+    }
+    *base_surface_data_array << newRow;
+  }
 
-      m_timeSlices.reserve( m_timeSlicesCount);
-      // m_timeSlices.resize(m_timeSlicesCount);
-
-        // const float sampleMinT = 0.0f;
-    //initialize slices with datarows
-    // for (int i(0); i < m_timeSlicesCount; i++) {
-    //
-    //     QSurfaceDataArray* array = new QSurfaceDataArray;
-    //     array->reserve(m_sampleCount);
-    //     // QSurfaceDataArray &array = m_timeSlices[i];
-    //     for (int j(0); j < m_sampleCount; j++)
-    //         array->append(new QSurfaceDataRow(m_sampleCount));
-    //     m_timeSlices[i] = array;
-    // }
-
-  // Populate slices
+  // Populate time slices
   for (int i(0); i < m_timeSlicesCount; i++) {
-
-    // QSurfaceDataArray* slice = m_timeSlices[i];
-
     QSurfaceDataArray* slice = new QSurfaceDataArray;
     slice->reserve(m_sampleCount);
-
-
-    const float sampleMinT = 0.0f;
-    const float sampleMaxT = (2 * M_PI * m_radius) / (m_wave_speed * bessel_root);
-    float stepT = (sampleMaxT - sampleMinT) / float(m_timeSlicesCount - 1);
     float t = qMin(sampleMaxT, (i * stepT + sampleMinT));
-    auto temporal = qCos(m_wave_speed * (bessel_root / m_radius) * t);
-
-    for (int j(0); j < m_sampleCount; j++) {
-      // QSurfaceDataRow& row = *(slice->at(j));
-    QSurfaceDataRow *newRow = new QSurfaceDataRow(m_sampleCount);
-    auto sampleMaxR = m_radius;
-    float stepR = (sampleMaxR - sampleMinR) / float(m_sampleCount - 1);
-    float r = qMin(sampleMaxR, (j * stepR + sampleMinR));
-    auto radial =  boost::math::cyl_bessel_j(bessel_order_n, (bessel_root / m_radius) * r);
-    int index = 0;
-      for (int k = 0; k < m_sampleCount; k++) {
-
-        float stepTheta = (sampleMaxTheta - sampleMinTheta) / float(m_sampleCount - 1);
-        float theta = qMin(sampleMaxTheta, (k * stepTheta + sampleMinTheta));
-
-        auto angular = qCos(bessel_order_n * theta);
-        auto z = radial * angular * temporal ;
-          (*newRow)[index++].setPosition(QVector3D(theta, z, r));
-      }
-
-    *slice << newRow;
-    } //rows
-   m_timeSlices << slice;
-  } //slices
+    auto temporal = temporal_solution(t, bessel_root);
+    auto modifier = [&temporal](QSurfaceDataItem* item) -> void {
+      item->setY(temporal * item->y());
+    };
+    slice = newSurfaceDataArrayFromSource(base_surface_data_array, modifier);
+    m_timeSlices << slice;
+  }  // slices
 }
 
 
- QVector<QSurfaceDataArray*>
-Solution::getTimeSlices( )  {
-      // qDebug() << "size:" << m_timeSlices.size();
-      // qDebug() << "cont" <<  m_timeSlices.count();
-
-return m_timeSlices;
+QVector<QSurfaceDataArray*> Solution::getTimeSlices() {
+  return m_timeSlices;
 }
-
 
 void Solution::clearData() {
   for (int i(0); i < m_timeSlices.size(); i++) {
     QSurfaceDataArray* array = m_timeSlices[i];
     for (int j(0); j < array->size(); j++) delete (*array)[j];
-    array -> clear();
+    array->clear();
   }
 }

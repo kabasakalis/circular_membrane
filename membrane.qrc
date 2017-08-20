@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/maps">
+        <file alias="drumhead">images/drummap2048.jpg</file>
+    </qresource>
+</RCC>

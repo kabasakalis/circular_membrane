@@ -8,6 +8,7 @@
 #include <boost/math/special_functions/bessel.hpp>
 
 using namespace QtDataVisualization;
+using namespace qt_helpers;
 
 const int Radius = 20;
 const int sampleCountX = 50;
@@ -33,15 +34,25 @@ Membrane::Membrane(Q3DSurface *surface, Solution *solution)
   m_graph->setAxisY(new QValue3DAxis);
   m_graph->setAxisZ(new QValue3DAxis);
 
+
+
+  QImage drumhead(":/maps/drumhead");
+
   //! [0]
   m_membraneProxy = new QSurfaceDataProxy();
   m_membraneSeries = new QSurface3DSeries(m_membraneProxy);
   //! [0]
 
+    m_membraneSeries ->setTexture(drumhead);
+    m_membraneSeries ->setName("Drumhead");
+
+
+        // m_membraneSeries->setDrawMode(QSurface3DSeries::DrawSurface);
+    // m_membraneSeries->setMeshAxisAndAngle(QVector3D(M_PI, 0.80f, 10.0f), M_PI/2);
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(updateTimeSlice()));
-  timer->start(100);
+  timer->start(50);
 
   // fillGraphProxy();
 }
@@ -93,10 +104,17 @@ void Membrane::enableGraph(bool enable) {
     m_membraneSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
     m_membraneSeries->setFlatShadingEnabled(true);
 
-    m_graph->axisX()->setLabelFormat("%.2f");
-    m_graph->axisZ()->setLabelFormat("%.2f");
+
+    QImage drumhead(":/maps/drumhead");
+    m_membraneSeries ->setTexture(drumhead);
+
+
+    m_membraneSeries->setMeshAxisAndAngle(QVector3D(M_PI, 0.80f, 10.0f), M_PI/2);
+
+    m_graph->axisX()->setLabelFormat("θ = %.2f");
+    m_graph->axisZ()->setLabelFormat("r = %.2f");
     m_graph->axisX()->setRange(sampleMinX, sampleMaxX);
-    m_graph->axisY()->setRange(0.0f, 2.0f);
+    m_graph->axisY()->setRange(-1.0f, 1.0f);
     m_graph->axisZ()->setRange(sampleMinZ, sampleMaxZ);
     m_graph->axisX()->setLabelAutoRotation(30);
     m_graph->axisY()->setLabelAutoRotation(90);
@@ -128,28 +146,15 @@ void Membrane::changeTheme(int theme) {
   m_graph->activeTheme()->setType(Q3DTheme::Theme(theme));
 }
 
+
+
 void Membrane::updateTimeSlice() {
   m_timeSliceIndex++;
   if (m_timeSliceIndex > m_timeSlices.size() - 1) m_timeSliceIndex = 0;
-
-  qDebug() << "upda" << m_timeSlices.size();
   qDebug() << "m_timeSliceIndex" << m_timeSliceIndex;
-  qDebug() << "timeSlices cap" << m_timeSlices.capacity();
-
   auto qsurface_data_array = m_timeSlices.at(m_timeSliceIndex);
-  int sampleCount = qsurface_data_array->size();
-
-  m_resetArray = new QSurfaceDataArray();
-  m_resetArray->reserve(sampleCount);
-  for (int i(0); i < sampleCount; i++)
-    m_resetArray->append(new QSurfaceDataRow(sampleCount));
-
-  for (int i(0); i < sampleCount; i++) {
-    const QSurfaceDataRow &sourceRow = *(qsurface_data_array->at(i));
-    QSurfaceDataRow &row = *(*m_resetArray)[i];
-    for (int j(0); j < sampleCount; j++)
-      row[j].setPosition(sourceRow.at(j).position());
-  }
+  auto modifier = [](QSurfaceDataItem* item) -> void { item->position() ; };
+  m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
   m_membraneProxy->resetArray(m_resetArray);
 }
 
