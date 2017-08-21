@@ -95,15 +95,6 @@ void Membrane::updateTimeSlice() {
 }
 
 
-//! [5]
-// void Membrane::setAxisXRange(float min, float max) {
-//   m_graph->axisX()->setRange(min, max);
-// }
-//
-// void Membrane::setAxisZRange(float min, float max) {
-//   m_graph->axisZ()->setRange(min, max);
-// }
-
 void Membrane::setUpUi() {
 
 QWidget *container = QWidget::createWindowContainer(m_graph);
