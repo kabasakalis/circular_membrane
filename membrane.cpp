@@ -53,15 +53,15 @@ Membrane::~Membrane() { delete m_graph; }
 
 void Membrane::enableGraph(bool enable) {
   if (enable) {
+    m_membraneSeries->setName("Drumhead");
     m_membraneSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
     m_membraneSeries->setFlatShadingEnabled(true);
     QImage drumhead(":/maps/drumhead");
     m_membraneSeries->setTexture(drumhead);
-    m_membraneSeries->setName("Drumhead");
     m_graph->axisX()->setLabelFormat("θ = %.2f");
     m_graph->axisZ()->setLabelFormat("r = %.2f");
     m_graph->axisX()->setRange(Solution::sampleMinTheta, Solution::sampleMaxTheta);
-    m_graph->axisY()->setRange(-1.0f, 1.0f);
+    m_graph->axisY()->setRange(Solution::sampleMinY, Solution::sampleMaxY);
     m_graph->axisZ()->setRange(Solution::sampleMinR, m_solution -> radius());
     m_graph->axisX()->setLabelAutoRotation(30);
     m_graph->axisY()->setLabelAutoRotation(90);
@@ -83,6 +83,16 @@ void Membrane::updateTimeSlice() {
   m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
   m_membraneProxy->resetArray(m_resetArray);
 }
+
+
+//! [5]
+// void Membrane::setAxisXRange(float min, float max) {
+//   m_graph->axisX()->setRange(min, max);
+// }
+//
+// void Membrane::setAxisZRange(float min, float max) {
+//   m_graph->axisZ()->setRange(min, max);
+// }
 
 void Membrane::setUpUi() {
 
@@ -108,6 +118,7 @@ QWidget *container = QWidget::createWindowContainer(m_graph);
   hLayout->addWidget(container, 1);
   hLayout->addLayout(vLayout);
   vLayout->setAlignment(Qt::AlignTop);
+  //! [1]
 
   widget->setWindowTitle(
       QStringLiteral("Normal modes of Circular Membrane Vibration."));

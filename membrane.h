@@ -22,17 +22,12 @@ class Membrane : public QObject {
   ~Membrane();
 
   void enableGraph(bool enable);
-  void toggleModeNone() {
-    m_graph->setSelectionMode(QAbstract3DGraph::SelectionNone);
-  }
-  void toggleModeItem() {
-    m_graph->setSelectionMode(QAbstract3DGraph::SelectionItem);
-  }
-  void toggleModeSliceRow() {
-    m_graph->setSelectionMode(QAbstract3DGraph::SelectionItemAndRow |
-                              QAbstract3DGraph::SelectionSlice);
-  }
-  void toggleModeSliceColumn() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionItemAndColumn
+    void toggleModeNone() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionNone); }
+    void toggleModeItem() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionItem); }
+    void toggleModeSliceRow() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionItemAndRow
+                                                          | QAbstract3DGraph::SelectionSlice); }
+    void toggleModeSliceColumn() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionItemAndColumn
+                                                             | QAbstract3DGraph::SelectionSlice); }
  void setUpUi();
 
  public Q_SLOTS:
@@ -43,13 +38,14 @@ private:
   QSurfaceDataProxy *m_membraneProxy;
   QSurface3DSeries *m_membraneSeries;
 
-  // void setAxisXRange(float min, float max);
-  // void setAxisZRange(float min, float max);
+  // void fillGraphProxy();
+
 
   std::atomic<int> m_timeSliceIndex{0};
   Solution* m_solution;
   QVector<QSurfaceDataArray*> m_timeSlices;
   QSurfaceDataArray* m_resetArray;
+    //  Ui::Membrane *ui;
   };
 
 #endif  // MEMBRANE_H

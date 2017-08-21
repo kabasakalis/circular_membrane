@@ -8,18 +8,20 @@ using namespace QtDataVisualization;
 const float Solution::sampleMinTheta = 0.0f;
 const float Solution::sampleMaxTheta = 2 * M_PI;
 const float Solution::sampleMinR = 0.0f;
+const float Solution::sampleMinY = -1.0f;
+const float Solution::sampleMaxY = 1.0f;
 
 Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
                    float wave_speed, QObject* parent)
     : QObject(parent),
-      m_resetArray(0),
       m_radius(radius),
       m_wave_speed(wave_speed),
       m_sampleCount(sampleCount),
       m_timeSlicesCount(timeSlicesCount),
       m_sampleMaxR(radius),
       m_stepR{(radius - sampleMinR) / float(sampleCount - 1)},
-      m_stepTheta{(sampleMaxTheta - sampleMinTheta) / float(sampleCount - 1)}
+      m_stepTheta{(sampleMaxTheta - sampleMinTheta) / float(sampleCount - 1)},
+      m_resetArray(0)
 
 {
   generateData(6.0, 3);
@@ -32,9 +34,7 @@ float Solution::radius() const {
 return m_radius;
 }
 
-
 float Solution::radial_solution(float r, float bessel_root,
-
                                 int bessel_order_n) {
   return boost::math::cyl_bessel_j(bessel_order_n,
                                    (bessel_root / m_radius) * r);
