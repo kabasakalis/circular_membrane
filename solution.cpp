@@ -5,9 +5,9 @@
 
 using namespace QtDataVisualization;
 
-constexpr const float sampleMinTheta = 0.0f;
-constexpr const float sampleMaxTheta = 2 * M_PI;
-constexpr const float sampleMinR = 0.0f;
+const float Solution::sampleMinTheta = 0.0f;
+const float Solution::sampleMaxTheta = 2 * M_PI;
+const float Solution::sampleMinR = 0.0f;
 
 Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
                    float wave_speed, QObject* parent)
@@ -27,7 +27,14 @@ Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
 
 Solution::~Solution() { clearData(); }
 
+
+float Solution::radius() const {
+return m_radius;
+}
+
+
 float Solution::radial_solution(float r, float bessel_root,
+
                                 int bessel_order_n) {
   return boost::math::cyl_bessel_j(bessel_order_n,
                                    (bessel_root / m_radius) * r);

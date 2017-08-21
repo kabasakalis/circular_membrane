@@ -4,20 +4,31 @@
 
 #include <QtDataVisualization/QSurface3DSeries>
 #include "qt_helpers.h"
-
+#include <QtCore/qmath.h>
 
 using namespace QtDataVisualization;
 using namespace qt_helpers;
 
 class Solution : public QObject
 {
+
+
+
     Q_OBJECT
 public:
+      const static float sampleMinTheta ;
+      const static float sampleMaxTheta ;
+      const static float sampleMinR ;
+
+
+
+    float radius() const;
     explicit Solution(int sampleCount, int timeSlicesCount, float radius,
                       float wave_speed, QObject *parent = 0);
     virtual ~Solution();
 
     //! [0]
+
 
 QVector<QSurfaceDataArray*> getTimeSlices() ;
 // static  QSurfaceDataArray* newSurfaceDataArrayFromSource(QSurfaceDataArray* source_surface_data_array);
@@ -49,5 +60,6 @@ private:
 
 
 };
+
 
 #endif
