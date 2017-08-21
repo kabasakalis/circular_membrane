@@ -51,11 +51,12 @@ public:
   void setAxisMaxSliderX(QSlider *slider) { m_axisMaxSliderX = slider; }
   void setAxisMinSliderZ(QSlider *slider) { m_axisMinSliderZ = slider; }
   void setAxisMaxSliderZ(QSlider *slider) { m_axisMaxSliderZ = slider; }
-
  void adjustXMin(int min);
  void adjustXMax(int max);
  void adjustZMin(int min);
  void adjustZMax(int max);
+
+static void setUpUi( Membrane* membrane, Q3DSurface* graph);
 
  public Q_SLOTS:
     void changeTheme(int theme);
@@ -81,7 +82,7 @@ private:
 
   void setAxisXRange(float min, float max);
   void setAxisZRange(float min, float max);
-  void fillGraphProxy();
+  // void fillGraphProxy();
 
 
   std::atomic<int> m_timeSliceIndex{0};

@@ -67,7 +67,6 @@ void Solution::generateData(float bessel_order_n, int root_order_m) {
     }
     *base_surface_data_array << newRow;
   }
-
   // Populate time slices
   for (int i(0); i < m_timeSlicesCount; i++) {
     QSurfaceDataArray* slice = new QSurfaceDataArray;
