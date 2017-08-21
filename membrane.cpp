@@ -21,6 +21,7 @@
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QPushButton>
 
 using namespace QtDataVisualization;
 using namespace qt_helpers;
@@ -66,6 +67,13 @@ void Membrane::enableGraph(bool enable) {
     m_graph->axisX()->setLabelAutoRotation(30);
     m_graph->axisY()->setLabelAutoRotation(90);
     m_graph->axisZ()->setLabelAutoRotation(30);
+
+
+    m_graph->removeSeries(m_membraneSeries);
+
+    m_membraneProxy = new QSurfaceDataProxy();
+    m_membraneSeries = new QSurface3DSeries(m_membraneProxy);
+
     m_graph->addSeries(m_membraneSeries);
   }
 }
@@ -76,9 +84,11 @@ void Membrane::changeTheme(int theme) {
 
 void Membrane::updateTimeSlice() {
   m_timeSliceIndex++;
-  if (m_timeSliceIndex > m_timeSlices.size() - 1) m_timeSliceIndex = 0;
+  if (m_timeSliceIndex > m_solution-> getTimeSlices().size() - 1) m_timeSliceIndex = 0;
   qDebug() << "m_timeSliceIndex" << m_timeSliceIndex;
-  auto qsurface_data_array = m_timeSlices.at(m_timeSliceIndex);
+  // auto qsurface_data_array = m_timeSlices.at(m_timeSliceIndex);
+  auto qsurface_data_array = m_solution-> getTimeSlices().at(m_timeSliceIndex);
+
   auto modifier = [](QSurfaceDataItem *item) -> void { item->position(); };
   m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
   m_membraneProxy->resetArray(m_resetArray);
@@ -124,9 +134,26 @@ QWidget *container = QWidget::createWindowContainer(m_graph);
       QStringLiteral("Normal modes of Circular Membrane Vibration."));
 
 
+
+    QGroupBox *normalModeGroupBox = new QGroupBox(QStringLiteral("Normal Modes"));
+    QVBoxLayout *normalModeVBox = new QVBoxLayout;
+
+    QPushButton* testB = new QPushButton("&Test",widget);
+    normalModeVBox->addWidget(testB);
+    normalModeGroupBox->setLayout(normalModeVBox);
+
+
+
+    // QVBoxLayout *modelVBox = new QVBoxLayout;
+    // modelVBox->addWidget(sqrtSinModelRB);
+    // modelVBox->addWidget(heightMapModelRB);
+    // modelGroupBox->setLayout(modelVBox);
+
+
   // Selection
   QGroupBox *selectionGroupBox =
       new QGroupBox(QStringLiteral("Selection Mode"));
+
 
   QRadioButton *modeNoneRB = new QRadioButton(widget);
   modeNoneRB->setText(QStringLiteral("No selection"));
@@ -163,6 +190,8 @@ QWidget *container = QWidget::createWindowContainer(m_graph);
   themeList->addItem(QStringLiteral("Ebony"));
   themeList->addItem(QStringLiteral("Isabelle"));
 
+
+  vLayout->addWidget(normalModeGroupBox);
   vLayout->addWidget(selectionGroupBox);
   vLayout->addWidget(new QLabel(QStringLiteral("Theme")));
   vLayout->addWidget(themeList);
@@ -183,6 +212,11 @@ QWidget *container = QWidget::createWindowContainer(m_graph);
 
 
   // Bindings
+
+  QObject::connect(testB, &QPushButton::clicked, this,
+                   &Membrane::activateNormalMode);
+
+
   QObject::connect(modeNoneRB, &QRadioButton::toggled, this,
                    &Membrane::toggleModeNone);
   QObject::connect(modeItemRB, &QRadioButton::toggled, this,

@@ -18,6 +18,7 @@ class Solution : public QObject {
   const static float sampleMaxY;
   const static float sampleMinR;
 
+  void generateData(float bessel_order_n, int root_order_m);
   float radius() const;
   explicit Solution(int sampleCount, int timeSlicesCount, float radius,
                     float wave_speed, QObject* parent = 0);
@@ -27,7 +28,6 @@ class Solution : public QObject {
  public Q_SLOTS:
  private:
   void clearData();
-  void generateData(float bessel_order_n, int root_order_m);
   float get_bessel_root(float bessel_order_n, int root_order_m);
   float radial_solution(float r, float bessel_root, int bessel_order_n);
   float angular_solution(float theta, float bessel_order_n);

@@ -24,7 +24,7 @@ Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
       m_resetArray(0)
 
 {
-  generateData(6.0, 3);
+  generateData(0.0, 5);
 }
 
 Solution::~Solution() { clearData(); }
@@ -54,7 +54,7 @@ float Solution::get_bessel_root(float bessel_order_n, int root_order_m) {
 
 void Solution::generateData(float bessel_order_n, int root_order_m) {
   if (!m_timeSlicesCount || !m_sampleCount) return;
-  clearData();
+  // clearData();
   auto bessel_root = get_bessel_root(bessel_order_n, root_order_m);
   const float sampleMinT = 0.0f;
   const float sampleMaxT = (2 * M_PI * m_radius) / (m_wave_speed * bessel_root);

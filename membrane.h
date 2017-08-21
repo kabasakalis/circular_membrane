@@ -28,6 +28,27 @@ class Membrane : public QObject {
                                                           | QAbstract3DGraph::SelectionSlice); }
     void toggleModeSliceColumn() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionItemAndColumn
                                                              | QAbstract3DGraph::SelectionSlice); }
+
+
+
+  void activateNormalMode() {
+    enableGraph(true);
+    m_solution->generateData(2.0, 3);
+
+
+  //     m_timeSliceIndex++;
+  // if (m_timeSliceIndex > m_timeSlices.size() - 1) m_timeSliceIndex = 0;
+  // qDebug() << "m_timeSliceIndex" << m_timeSliceIndex;
+  // auto qsurface_data_array = m_timeSlices.at(m_timeSliceIndex);
+  auto qsurface_data_array = m_solution-> getTimeSlices().at(m_timeSliceIndex);
+
+  auto modifier = [](QSurfaceDataItem *item) -> void { item->position(); };
+  m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
+  m_membraneProxy->resetArray(m_resetArray);
+
+  qDebug() << "activate" << m_timeSliceIndex;
+  }
+
  void setUpUi();
 
  public Q_SLOTS:
