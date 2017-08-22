@@ -2,9 +2,7 @@
 #include "qt_helpers.h"
 #include <QtDataVisualization/QSurface3DSeries>
 
-
 namespace qt_helpers {
-
 
  QSurfaceDataArray* newSurfaceDataArrayFromSource( QSurfaceDataArray* source_surface_data_array,
                                                   std::function<void(QSurfaceDataItem*)> modifier ){

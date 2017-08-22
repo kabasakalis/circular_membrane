@@ -7,7 +7,7 @@
 QT += core gui datavisualization
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-# Boost
+# Boost  (change this to boost path in your system).
 INCLUDEPATH += /home/spiros/.hunter/_Base/db6f548/0f5c128/2a3fb9f/Install/include
 
 TARGET = circular_membrane
@@ -39,10 +39,6 @@ HEADERS += \
         membrane.h \
         solution.h
         qt_helpers.h
-
-FORMS += \
-        membrane.ui
-
 
 RESOURCES += membrane.qrc
 

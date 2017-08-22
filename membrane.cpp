@@ -47,7 +47,6 @@ Membrane::Membrane(Solution *solution)
 
 Membrane::~Membrane() { delete m_graph; }
 
-
 void Membrane::initializeSeries() {
   m_graph->removeSeries(m_membraneSeries);
   m_membraneProxy = new QSurfaceDataProxy();
@@ -84,7 +83,6 @@ void Membrane::updateTimeSlice() {
   m_timeSliceIndex++;
   if (m_timeSliceIndex > m_solution->getTimeSlices().size() - 1)
     m_timeSliceIndex = 0;
-  // qDebug() << "m_timeSliceIndex" << m_timeSliceIndex;
   auto qsurface_data_array = m_solution->getTimeSlices().at(m_timeSliceIndex);
   auto modifier = [](QSurfaceDataItem *item) -> void { item->position(); };
   m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
@@ -94,21 +92,28 @@ void Membrane::updateTimeSlice() {
 
 void Membrane::setSelectedBesselOrder( int n) {
   m_selected_bessel_order = static_cast<float>(n);
-  qDebug() << "Setting bessel order" << m_selected_bessel_order;
 }
 
 
 void Membrane::setSelectedBesselRoot(int m) {
   m_selected_bessel_root = m;
-  qDebug() << "Setting root order" << m_selected_bessel_root;
 }
-
 
 void Membrane::activateNormalMode() {
   initializeSeries();
-  // qDebug() << "Selected bessel order" << m_selected_bessel_order;
-  // qDebug() << "Selected bessel root" << m_selected_bessel_root;
   m_solution->generateData(m_selected_bessel_order, m_selected_bessel_root);
+  setModeLabel();
+}
+
+void Membrane::setModeLabel() {
+  QString header = QString("<b>Mode (%1, %2)</b><br>")
+                  .arg(m_selected_bessel_order).arg(m_selected_bessel_root);
+  QString frequency_title = QString("<b>Frequency Ratio:</b><br>");
+  QString frequency_ratio = QString("f(%1, %2) = <b>%3</b> * f(0, 1)\n")
+                  .arg(m_selected_bessel_order)
+                  .arg(m_selected_bessel_root)
+                  .arg( m_solution -> frequency_ratio( m_selected_bessel_order, m_selected_bessel_root));
+  m_modeLabel->setText(header + frequency_title + frequency_ratio);
 }
 
 void Membrane::setUpUi() {
@@ -133,22 +138,18 @@ void Membrane::setUpUi() {
   hLayout->addWidget(container, 1);
   hLayout->addLayout(vLayout);
   vLayout->setAlignment(Qt::AlignTop);
-  //! [1]
 
   widget->setWindowTitle(
-      QStringLiteral("Normal modes of Circular Membrane Vibration."));
+      QStringLiteral("Normal modes of a vibrating circular membrane (drumhead)."));
 
-  QGroupBox *normalModeGroupBox = new QGroupBox(QStringLiteral("Normal Modes"));
+  QGroupBox *normalModeGroupBox = new QGroupBox();
   QVBoxLayout *normalModeVBox = new QVBoxLayout;
 
 
-  modeLabel = new QLabel(widget);
-  modeLabel->setTextFormat(Qt::RichText);
-  modeLabel->setText("<b>Tesdting</b>\n");
-  QString status = QString("Processing file %1 of %2:")
-                .arg(m_selected_bessel_order).arg(m_selected_bessel_root);
-  modeLabel->setText( modeLabel->text() + status);
-  normalModeVBox->addWidget(modeLabel);
+  m_modeLabel = new QLabel(widget);
+  m_modeLabel->setTextFormat(Qt::RichText);
+  setModeLabel();
+  normalModeVBox->addWidget(m_modeLabel);
 
   QSpinBox *besselOrderSbx = new QSpinBox(widget);
   besselOrderSbx->setRange(0, 10000);
@@ -158,16 +159,13 @@ void Membrane::setUpUi() {
 
   QSpinBox *besselRootSbx = new QSpinBox(widget);
   besselRootSbx->setRange(1, 5000);
-  besselRootSbx->setPrefix("Bessel Root m:                 ");
+  besselRootSbx->setPrefix("Bessel Root m:                       ");
   normalModeVBox->addWidget(besselRootSbx);
 
   QPushButton *normalModeResetB = new QPushButton("&Reset Normal Mode", widget);
   normalModeVBox->addWidget(normalModeResetB);
 
   normalModeGroupBox->setLayout(normalModeVBox);
-
-
-
 
   // Selection
   QGroupBox *selectionGroupBox =
@@ -232,8 +230,6 @@ void Membrane::setUpUi() {
                    &Membrane::toggleModeSliceColumn);
   QObject::connect(themeList, SIGNAL(currentIndexChanged(int)), this,
                    SLOT(changeTheme(int)));
-
-
 
   themeList->setCurrentIndex(7);
 }

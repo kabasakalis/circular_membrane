@@ -24,11 +24,10 @@ Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
       m_resetArray(0)
 
 {
-  generateData(0.0, 5);
+  generateData(0.0, 1);
 }
 
 Solution::~Solution() { clearData(); }
-
 
 float Solution::radius() const {
 return m_radius;
@@ -51,6 +50,18 @@ float Solution::temporal_solution(float t, float bessel_root) {
 float Solution::get_bessel_root(float bessel_order_n, int root_order_m) {
   return boost::math::cyl_bessel_j_zero(bessel_order_n, root_order_m);
 }
+
+
+float Solution::frequency(float bessel_order_n, int root_order_m) {
+  return ( get_bessel_root(bessel_order_n, root_order_m) * m_wave_speed) / (2 * M_PI * m_radius);
+}
+
+
+float Solution::frequency_ratio(float bessel_order_n, int root_order_m) {
+  return frequency(bessel_order_n, root_order_m) / frequency(0.0, 1);
+}
+
+
 
 void Solution::generateData(float bessel_order_n, int root_order_m) {
   if (!m_timeSlicesCount || !m_sampleCount) return;

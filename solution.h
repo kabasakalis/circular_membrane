@@ -19,6 +19,8 @@ class Solution : public QObject {
   const static float sampleMinR;
 
   void generateData(float bessel_order_n, int root_order_m);
+  float frequency(float bessel_order_n, int root_order_m);
+  float frequency_ratio(float bessel_order_n, int root_order_m);
   float radius() const;
   explicit Solution(int sampleCount, int timeSlicesCount, float radius,
                     float wave_speed, QObject* parent = 0);

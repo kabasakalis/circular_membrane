@@ -31,8 +31,6 @@ class Membrane : public QObject {
     void toggleModeSliceColumn() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionItemAndColumn
                                                              | QAbstract3DGraph::SelectionSlice); }
 
-void activateNormalMode();
-void setUpUi();
 
  public Q_SLOTS:
     void changeTheme(int theme);
@@ -41,6 +39,9 @@ void setUpUi();
     void setSelectedBesselOrder(int n);
     void setSelectedBesselRoot(int m);
 private:
+  void activateNormalMode();
+  void setUpUi();
+  void setModeLabel();
   Q3DSurface *m_graph;
   QSurfaceDataProxy *m_membraneProxy;
   QSurface3DSeries *m_membraneSeries;
@@ -49,7 +50,7 @@ private:
   QSurfaceDataArray* m_resetArray;
   float m_selected_bessel_order;
   int   m_selected_bessel_root;
-  QLabel* modeLabel;
+  QLabel* m_modeLabel;
   };
 
 #endif  // MEMBRANE_H
