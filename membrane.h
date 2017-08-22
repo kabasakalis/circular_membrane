@@ -21,7 +21,8 @@ class Membrane : public QObject {
   explicit Membrane(Solution* solution);
   ~Membrane();
 
-  void enableGraph(bool enable);
+    void initializeGraph();
+    void initializeSeries();
     void toggleModeNone() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionNone); }
     void toggleModeItem() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionItem); }
     void toggleModeSliceRow() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionItemAndRow
@@ -29,44 +30,24 @@ class Membrane : public QObject {
     void toggleModeSliceColumn() { m_graph->setSelectionMode(QAbstract3DGraph::SelectionItemAndColumn
                                                              | QAbstract3DGraph::SelectionSlice); }
 
-
-
-  void activateNormalMode() {
-    enableGraph(true);
-    m_solution->generateData(2.0, 3);
-
-
-  //     m_timeSliceIndex++;
-  // if (m_timeSliceIndex > m_timeSlices.size() - 1) m_timeSliceIndex = 0;
-  // qDebug() << "m_timeSliceIndex" << m_timeSliceIndex;
-  // auto qsurface_data_array = m_timeSlices.at(m_timeSliceIndex);
-  auto qsurface_data_array = m_solution-> getTimeSlices().at(m_timeSliceIndex);
-
-  auto modifier = [](QSurfaceDataItem *item) -> void { item->position(); };
-  m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
-  m_membraneProxy->resetArray(m_resetArray);
-
-  qDebug() << "activate" << m_timeSliceIndex;
-  }
-
- void setUpUi();
+void activateNormalMode();
+void setUpUi();
 
  public Q_SLOTS:
     void changeTheme(int theme);
     void updateTimeSlice();
+    // void setSelectedBesselOrder(float n);
+    void setSelectedBesselOrder(int n);
+    void setSelectedBesselRoot(int m);
 private:
   Q3DSurface *m_graph;
   QSurfaceDataProxy *m_membraneProxy;
   QSurface3DSeries *m_membraneSeries;
-
-  // void fillGraphProxy();
-
-
   std::atomic<int> m_timeSliceIndex{0};
   Solution* m_solution;
-  QVector<QSurfaceDataArray*> m_timeSlices;
   QSurfaceDataArray* m_resetArray;
-    //  Ui::Membrane *ui;
+  float m_selected_bessel_order;
+  int   m_selected_bessel_root;
   };
 
 #endif  // MEMBRANE_H

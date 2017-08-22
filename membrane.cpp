@@ -17,65 +17,62 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QPushButton>
+#include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/QSpinBox>
 
 using namespace QtDataVisualization;
 using namespace qt_helpers;
 
-
 Membrane::Membrane(Solution *solution)
-     : m_graph(new Q3DSurface()),
-       m_solution(solution),
-       m_timeSlices(solution->getTimeSlices()),
-       m_resetArray(0) {
-
-  m_graph-> setPolar(true);
-  m_graph->setAxisX(new QValue3DAxis);
-  m_graph->setAxisY(new QValue3DAxis);
-  m_graph->setAxisZ(new QValue3DAxis);
-
-  m_membraneProxy = new QSurfaceDataProxy();
-  m_membraneSeries = new QSurface3DSeries(m_membraneProxy);
-  enableGraph(true);
-
+    : m_graph(new Q3DSurface()),
+      m_solution(solution),
+      m_resetArray(0),
+      m_selected_bessel_order{0.0f},
+      m_selected_bessel_root{1}
+{
+  initializeGraph();
+  initializeSeries();
   setUpUi();
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(updateTimeSlice()));
   timer->start(50);
-
 }
 
 Membrane::~Membrane() { delete m_graph; }
 
-void Membrane::enableGraph(bool enable) {
-  if (enable) {
-    m_membraneSeries->setName("Drumhead");
-    m_membraneSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
-    m_membraneSeries->setFlatShadingEnabled(true);
-    QImage drumhead(":/maps/drumhead");
-    m_membraneSeries->setTexture(drumhead);
-    m_graph->axisX()->setLabelFormat("θ = %.2f");
-    m_graph->axisZ()->setLabelFormat("r = %.2f");
-    m_graph->axisX()->setRange(Solution::sampleMinTheta, Solution::sampleMaxTheta);
-    m_graph->axisY()->setRange(Solution::sampleMinY, Solution::sampleMaxY);
-    m_graph->axisZ()->setRange(Solution::sampleMinR, m_solution -> radius());
-    m_graph->axisX()->setLabelAutoRotation(30);
-    m_graph->axisY()->setLabelAutoRotation(90);
-    m_graph->axisZ()->setLabelAutoRotation(30);
 
+void Membrane::initializeSeries() {
+  m_graph->removeSeries(m_membraneSeries);
+  m_membraneProxy = new QSurfaceDataProxy();
+  m_membraneSeries = new QSurface3DSeries(m_membraneProxy);
+  m_membraneSeries->setName("Drumhead");
+  m_membraneSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
+  m_membraneSeries->setFlatShadingEnabled(true);
+  QImage drumhead(":/maps/drumhead");
+  m_membraneSeries->setTexture(drumhead);
+  m_graph->addSeries(m_membraneSeries);
+}
 
-    m_graph->removeSeries(m_membraneSeries);
-
-    m_membraneProxy = new QSurfaceDataProxy();
-    m_membraneSeries = new QSurface3DSeries(m_membraneProxy);
-
-    m_graph->addSeries(m_membraneSeries);
-  }
+void Membrane::initializeGraph() {
+  m_graph->setPolar(true);
+  m_graph->setAxisX(new QValue3DAxis);
+  m_graph->setAxisY(new QValue3DAxis);
+  m_graph->setAxisZ(new QValue3DAxis);
+  m_graph->axisX()->setLabelFormat("θ = %.2f");
+  m_graph->axisZ()->setLabelFormat("r = %.2f");
+  m_graph->axisX()->setRange(Solution::sampleMinTheta,
+                             Solution::sampleMaxTheta);
+  m_graph->axisY()->setRange(Solution::sampleMinY, Solution::sampleMaxY);
+  m_graph->axisZ()->setRange(Solution::sampleMinR, m_solution->radius());
+  m_graph->axisX()->setLabelAutoRotation(30);
+  m_graph->axisY()->setLabelAutoRotation(90);
+  m_graph->axisZ()->setLabelAutoRotation(30);
 }
 
 void Membrane::changeTheme(int theme) {
@@ -84,26 +81,42 @@ void Membrane::changeTheme(int theme) {
 
 void Membrane::updateTimeSlice() {
   m_timeSliceIndex++;
-  if (m_timeSliceIndex > m_solution-> getTimeSlices().size() - 1) m_timeSliceIndex = 0;
-  qDebug() << "m_timeSliceIndex" << m_timeSliceIndex;
-  // auto qsurface_data_array = m_timeSlices.at(m_timeSliceIndex);
-  auto qsurface_data_array = m_solution-> getTimeSlices().at(m_timeSliceIndex);
-
+  if (m_timeSliceIndex > m_solution->getTimeSlices().size() - 1)
+    m_timeSliceIndex = 0;
+  // qDebug() << "m_timeSliceIndex" << m_timeSliceIndex;
+  auto qsurface_data_array = m_solution->getTimeSlices().at(m_timeSliceIndex);
   auto modifier = [](QSurfaceDataItem *item) -> void { item->position(); };
   m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
   m_membraneProxy->resetArray(m_resetArray);
 }
 
 
+void Membrane::setSelectedBesselOrder( int n) {
+  m_selected_bessel_order = static_cast<float>(n);
+  qDebug() << "Setting bessel order" << m_selected_bessel_order;
+}
+
+
+void Membrane::setSelectedBesselRoot(int m) {
+  m_selected_bessel_root = m;
+  qDebug() << "Setting root order" << m_selected_bessel_root;
+}
+
+
+void Membrane::activateNormalMode() {
+  initializeSeries();
+  // qDebug() << "Selected bessel order" << m_selected_bessel_order;
+  // qDebug() << "Selected bessel root" << m_selected_bessel_root;
+  m_solution->generateData(m_selected_bessel_order, m_selected_bessel_root);
+}
+
 void Membrane::setUpUi() {
-
-QWidget *container = QWidget::createWindowContainer(m_graph);
-
+  QWidget *container = QWidget::createWindowContainer(m_graph);
   if (!m_graph->hasContext()) {
+
     QMessageBox msgBox;
     msgBox.setText("Couldn't initialize the OpenGL context.");
     msgBox.exec();
-    // return -1;
   }
 
   QSize screenSize = m_graph->screen()->size();
@@ -124,27 +137,34 @@ QWidget *container = QWidget::createWindowContainer(m_graph);
   widget->setWindowTitle(
       QStringLiteral("Normal modes of Circular Membrane Vibration."));
 
-
-
-    QGroupBox *normalModeGroupBox = new QGroupBox(QStringLiteral("Normal Modes"));
-    QVBoxLayout *normalModeVBox = new QVBoxLayout;
-
-    QPushButton* testB = new QPushButton("&Test",widget);
-    normalModeVBox->addWidget(testB);
-    normalModeGroupBox->setLayout(normalModeVBox);
+  QGroupBox *normalModeGroupBox = new QGroupBox(QStringLiteral("Normal Modes"));
+  QVBoxLayout *normalModeVBox = new QVBoxLayout;
 
 
 
-    // QVBoxLayout *modelVBox = new QVBoxLayout;
-    // modelVBox->addWidget(sqrtSinModelRB);
-    // modelVBox->addWidget(heightMapModelRB);
-    // modelGroupBox->setLayout(modelVBox);
+
+  QSpinBox *besselOrderSbx = new QSpinBox(widget);
+  besselOrderSbx->setRange(0, 10000);
+  besselOrderSbx->setPrefix("Bessel Function Order n:       ");
+  normalModeVBox->addWidget(besselOrderSbx);
+
+
+  QSpinBox *besselRootSbx = new QSpinBox(widget);
+  besselRootSbx->setRange(1, 5000);
+  besselRootSbx->setPrefix("Bessel Root m:                 ");
+  normalModeVBox->addWidget(besselRootSbx);
+
+  QPushButton *normalModeResetB = new QPushButton("&Reset Normal Mode", widget);
+  normalModeVBox->addWidget(normalModeResetB);
+
+  normalModeGroupBox->setLayout(normalModeVBox);
+
+
 
 
   // Selection
   QGroupBox *selectionGroupBox =
       new QGroupBox(QStringLiteral("Selection Mode"));
-
 
   QRadioButton *modeNoneRB = new QRadioButton(widget);
   modeNoneRB->setText(QStringLiteral("No selection"));
@@ -181,7 +201,6 @@ QWidget *container = QWidget::createWindowContainer(m_graph);
   themeList->addItem(QStringLiteral("Ebony"));
   themeList->addItem(QStringLiteral("Isabelle"));
 
-
   vLayout->addWidget(normalModeGroupBox);
   vLayout->addWidget(selectionGroupBox);
   vLayout->addWidget(new QLabel(QStringLiteral("Theme")));
@@ -189,24 +208,12 @@ QWidget *container = QWidget::createWindowContainer(m_graph);
   widget->show();
 
   // Bindings
-  // QObject::connect(modeNoneRB, &QRadioButton::toggled, modifier,
-  //                  &Membrane::toggleModeNone);
-  // QObject::connect(modeItemRB, &QRadioButton::toggled, modifier,
-  //                  &Membrane::toggleModeItem);
-  // QObject::connect(modeSliceRowRB, &QRadioButton::toggled, modifier,
-  //                  &Membrane::toggleModeSliceRow);
-  // QObject::connect(modeSliceColumnRB, &QRadioButton::toggled, modifier,
-  //                  &Membrane::toggleModeSliceColumn);
-  // QObject::connect(themeList, SIGNAL(currentIndexChanged(int)), modifier,
-  //                  SLOT(changeTheme(int)));
-  //
-
-
-  // Bindings
-
-  QObject::connect(testB, &QPushButton::clicked, this,
+  QObject::connect(normalModeResetB, &QPushButton::clicked, this,
                    &Membrane::activateNormalMode);
-
+  QObject::connect(besselOrderSbx, SIGNAL(valueChanged(int)), this,
+                     SLOT(setSelectedBesselOrder(int))) ;
+  QObject::connect(besselRootSbx, SIGNAL(valueChanged(int)), this,
+                     SLOT(setSelectedBesselRoot(int))) ;
 
   QObject::connect(modeNoneRB, &QRadioButton::toggled, this,
                    &Membrane::toggleModeNone);
@@ -219,6 +226,9 @@ QWidget *container = QWidget::createWindowContainer(m_graph);
   QObject::connect(themeList, SIGNAL(currentIndexChanged(int)), this,
                    SLOT(changeTheme(int)));
 
-  themeList->setCurrentIndex(7);
 
+
+
+
+  themeList->setCurrentIndex(7);
 }

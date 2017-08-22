@@ -24,7 +24,7 @@ class Solution : public QObject {
                     float wave_speed, QObject* parent = 0);
   virtual ~Solution();
 
-  QVector<QSurfaceDataArray*> getTimeSlices();
+ QVector<QSurfaceDataArray*> getTimeSlices();
  public Q_SLOTS:
  private:
   void clearData();
