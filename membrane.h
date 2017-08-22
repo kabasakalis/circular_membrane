@@ -8,6 +8,7 @@
 #include <QtDataVisualization/QSurface3DSeries>
 #include <QtDataVisualization/QSurfaceDataProxy>
 #include <QtWidgets/QSlider>
+#include <QtWidgets/QLabel>
 #include <atomic>
 #include "qt_helpers.h"
 #include "solution.h"
@@ -48,6 +49,7 @@ private:
   QSurfaceDataArray* m_resetArray;
   float m_selected_bessel_order;
   int   m_selected_bessel_root;
+  QLabel* modeLabel;
   };
 
 #endif  // MEMBRANE_H

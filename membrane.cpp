@@ -24,6 +24,7 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QSpinBox>
+#include <QtWidgets/QLabel>
 
 using namespace QtDataVisualization;
 using namespace qt_helpers;
@@ -141,7 +142,13 @@ void Membrane::setUpUi() {
   QVBoxLayout *normalModeVBox = new QVBoxLayout;
 
 
-
+  modeLabel = new QLabel(widget);
+  modeLabel->setTextFormat(Qt::RichText);
+  modeLabel->setText("<b>Tesdting</b>\n");
+  QString status = QString("Processing file %1 of %2:")
+                .arg(m_selected_bessel_order).arg(m_selected_bessel_root);
+  modeLabel->setText( modeLabel->text() + status);
+  normalModeVBox->addWidget(modeLabel);
 
   QSpinBox *besselOrderSbx = new QSpinBox(widget);
   besselOrderSbx->setRange(0, 10000);
@@ -225,8 +232,6 @@ void Membrane::setUpUi() {
                    &Membrane::toggleModeSliceColumn);
   QObject::connect(themeList, SIGNAL(currentIndexChanged(int)), this,
                    SLOT(changeTheme(int)));
-
-
 
 
 
