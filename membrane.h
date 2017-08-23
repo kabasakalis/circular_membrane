@@ -45,7 +45,7 @@ class Membrane : public QObject {
   Q_OBJECT
 
  public:
-  explicit Membrane(Solution* solution);
+  explicit Membrane(Solution solution);
   ~Membrane();
 
     void initializeGraph();
@@ -66,10 +66,10 @@ private:
   void setUpUi();
   void setModeLabel();
   Q3DSurface *m_graph;
-  QSurfaceDataProxy *m_membraneProxy;
-  QSurface3DSeries *m_membraneSeries;
+  QSurfaceDataProxy *m_membraneProxy{0};
+  QSurface3DSeries *m_membraneSeries{0};
   std::atomic<int> m_timeSliceIndex{0};
-  Solution* m_solution;
+  Solution m_solution;
   QSurfaceDataArray* m_resetArray;
   float m_selected_bessel_order;
   int   m_selected_bessel_root;

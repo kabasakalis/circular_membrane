@@ -34,8 +34,7 @@
 using namespace QtDataVisualization;
 using namespace qt_helpers;
 
-class Solution : public QObject {
-  Q_OBJECT
+class Solution  {
  public:
   const static float sampleMinTheta;
   const static float sampleMaxTheta;
@@ -48,11 +47,11 @@ class Solution : public QObject {
   float frequency_ratio(float bessel_order_n, int root_order_m);
   float radius() const;
   explicit Solution(int sampleCount, int timeSlicesCount, float radius,
-                    float wave_speed, QObject* parent = 0);
+                    float wave_speed);
+
   virtual ~Solution();
 
  QVector<QSurfaceDataArray*> getTimeSlices();
- public Q_SLOTS:
  private:
   void clearData();
   float get_bessel_root(float bessel_order_n, int root_order_m);

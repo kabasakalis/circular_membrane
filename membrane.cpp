@@ -55,16 +55,16 @@
 using namespace QtDataVisualization;
 using namespace qt_helpers;
 
-Membrane::Membrane(Solution *solution)
+Membrane::Membrane(Solution solution)
     : m_graph(new Q3DSurface()),
       m_solution(solution),
       m_resetArray(0),
       m_selected_bessel_order{0.0f},
       m_selected_bessel_root{1}
 {
-  initializeGraph();
-  initializeSeries();
   setUpUi();
+  initializeGraph();
+  activateNormalMode();
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(updateTimeSlice()));
@@ -95,7 +95,7 @@ void Membrane::initializeGraph() {
   m_graph->axisX()->setRange(Solution::sampleMinTheta,
                              Solution::sampleMaxTheta);
   m_graph->axisY()->setRange(Solution::sampleMinY, Solution::sampleMaxY);
-  m_graph->axisZ()->setRange(Solution::sampleMinR, m_solution->radius());
+  m_graph->axisZ()->setRange(Solution::sampleMinR, m_solution.radius());
   m_graph->axisX()->setLabelAutoRotation(30);
   m_graph->axisY()->setLabelAutoRotation(90);
   m_graph->axisZ()->setLabelAutoRotation(30);
@@ -107,9 +107,9 @@ void Membrane::changeTheme(int theme) {
 
 void Membrane::updateTimeSlice() {
   m_timeSliceIndex++;
-  if (m_timeSliceIndex > m_solution->getTimeSlices().size() - 1)
+  if (m_timeSliceIndex > m_solution.getTimeSlices().size() - 1)
     m_timeSliceIndex = 0;
-  auto qsurface_data_array = m_solution->getTimeSlices().at(m_timeSliceIndex);
+  auto qsurface_data_array = m_solution.getTimeSlices().at(m_timeSliceIndex);
   auto modifier = [](QSurfaceDataItem *item) -> void { item->position(); };
   m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
   m_membraneProxy->resetArray(m_resetArray);
@@ -125,7 +125,7 @@ void Membrane::setSelectedBesselRoot(int m) {
 
 void Membrane::activateNormalMode() {
   initializeSeries();
-  m_solution->generateData(m_selected_bessel_order, m_selected_bessel_root);
+  m_solution.generateData(m_selected_bessel_order, m_selected_bessel_root);
   setModeLabel();
 }
 
@@ -136,7 +136,7 @@ void Membrane::setModeLabel() {
   QString frequency_ratio = QString("f(%1, %2) = <b>%3</b> * f(0, 1)\n")
                   .arg(m_selected_bessel_order)
                   .arg(m_selected_bessel_root)
-                  .arg( m_solution -> frequency_ratio( m_selected_bessel_order, m_selected_bessel_root));
+                  .arg( m_solution.frequency_ratio( m_selected_bessel_order, m_selected_bessel_root));
   m_modeLabel->setText(header + frequency_title + frequency_ratio);
 }
 
