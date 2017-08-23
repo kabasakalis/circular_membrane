@@ -39,6 +39,8 @@ const float Solution::sampleMaxY = 1.0f;
 
 Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
                    float wave_speed)
+
+    // : QObject(parent),
     : m_radius(radius),
       m_wave_speed(wave_speed),
       m_sampleCount(sampleCount),
