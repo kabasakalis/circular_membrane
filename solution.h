@@ -51,7 +51,7 @@ class Solution  {
 
   virtual ~Solution();
 
- QVector<QSurfaceDataArray*> getTimeSlices();
+ QVector<QSurfaceDataArray>& getTimeSlices();
  private:
   void clearData();
   float get_bessel_root(float bessel_order_n, int root_order_m);
@@ -65,7 +65,7 @@ class Solution  {
   float m_sampleMaxR;
   float m_stepR;
   float m_stepTheta;
-  QVector<QSurfaceDataArray*> m_timeSlices;
+  QVector<QSurfaceDataArray> m_timeSlices;
   QSurfaceDataArray* m_resetArray;
 };
 

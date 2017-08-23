@@ -96,7 +96,9 @@ void Solution::generateData(float bessel_order_n, int root_order_m) {
   const float sampleMaxT = (2 * M_PI * m_radius) / (m_wave_speed * bessel_root);
   float stepT = (sampleMaxT - sampleMinT) / float(m_timeSlicesCount - 1);
   m_timeSlices.reserve(m_timeSlicesCount);
-  QSurfaceDataArray* base_surface_data_array = new QSurfaceDataArray;
+
+  // QSurfaceDataArray base_surface_data_array = new QSurfaceDataArray;
+  QSurfaceDataArray base_surface_data_array;
   for (int j(0); j < m_sampleCount; j++) {
     QSurfaceDataRow* newRow = new QSurfaceDataRow(m_sampleCount);
     float r = qMin(m_sampleMaxR, (j * m_stepR + sampleMinR));
@@ -108,31 +110,40 @@ void Solution::generateData(float bessel_order_n, int root_order_m) {
       auto z = radial * angular;
       (*newRow)[index++].setPosition(QVector3D(theta, z, r));
     }
-    *base_surface_data_array << newRow;
+    base_surface_data_array << newRow;
   }
   // Populate time slices
   for (int i(0); i < m_timeSlicesCount; i++) {
-    QSurfaceDataArray* slice = new QSurfaceDataArray;
-    slice->reserve(m_sampleCount);
+    // QSurfaceDataArray* slice = new QSurfaceDataArray;
+    // QSurfaceDataArray slice;
+    // slice.reserve(m_sampleCount);
     float t = qMin(sampleMaxT, (i * stepT + sampleMinT));
     auto temporal = temporal_solution(t, bessel_root);
-    auto modifier = [&temporal](QSurfaceDataItem* item) -> void {
-      item->setY(temporal * item->y());
+    auto modifier = [&temporal](QSurfaceDataItem item) -> void {
+      item.setY(temporal * item.y());
     };
-    slice = newSurfaceDataArrayFromSource(base_surface_data_array, modifier);
-    m_timeSlices << slice;
+    // slice = newSurfaceDataArrayFromSource(base_surface_data_array, modifier);
+    // m_timeSlices << slice;
+    m_timeSlices << newSurfaceDataArrayFromSource(base_surface_data_array, modifier);
   }  // slices
+
+
+
 }
 
-QVector<QSurfaceDataArray*> Solution::getTimeSlices() {
+QVector<QSurfaceDataArray>& Solution::getTimeSlices() {
   return m_timeSlices;
 }
 
 void Solution::clearData() {
   for (int i(0); i < m_timeSlices.size(); i++) {
-    QSurfaceDataArray* array = m_timeSlices[i];
-    for (int j(0); j < array->size(); j++) delete (*array)[j];
-    array->clear();
+    auto array = m_timeSlices[i];
+    clearSurfaceDataArray( array );
+    // for (int j(0); j < array->size(); j++) delete (*array)[j];
+    // array->clear();
   }
   m_timeSlices.erase(m_timeSlices.begin(), m_timeSlices.end());
 }
+
+
+

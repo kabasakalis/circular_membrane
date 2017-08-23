@@ -110,8 +110,9 @@ void Membrane::updateTimeSlice() {
   if (m_timeSliceIndex > m_solution.getTimeSlices().size() - 1)
     m_timeSliceIndex = 0;
   auto qsurface_data_array = m_solution.getTimeSlices().at(m_timeSliceIndex);
-  auto modifier = [](QSurfaceDataItem *item) -> void { item->position(); };
-  m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
+  auto modifier = [](QSurfaceDataItem item) -> void { item.position(); };
+  m_resetArray = new QSurfaceDataArray;
+  *m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
   m_membraneProxy->resetArray(m_resetArray);
 }
 
