@@ -54,7 +54,9 @@ Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
   generateData(0.0, 1);
 }
 
-Solution::~Solution() { clearData(); }
+Solution::~Solution() {
+  // clearData();
+}
 
 float Solution::radius() const {
 return m_radius;
@@ -137,13 +139,24 @@ QVector<QSurfaceDataArray>& Solution::getTimeSlices() {
 
 void Solution::clearData() {
   for (int i(0); i < m_timeSlices.size(); i++) {
-    auto array = m_timeSlices[i];
-    clearSurfaceDataArray( array );
-    // for (int j(0); j < array->size(); j++) delete (*array)[j];
-    // array->clear();
+    // auto array = m_timeSlices[i];
+
+     QSurfaceDataArray& array = m_timeSlices[i];
+     // clearSurfaceDataArray( array );
+    for (int j(0); j < array.size(); j++) delete array[j];
+    array.clear();
   }
   m_timeSlices.erase(m_timeSlices.begin(), m_timeSlices.end());
 }
+
+
+    // for (int i(0); i < m_data.size(); i++) {
+    //     QSurfaceDataArray &array = m_data[i];
+    //     for (int j(0); j < array.size(); j++)
+    //         delete array[j];
+    //     array.clear();
+    // }
+
 
 
 
