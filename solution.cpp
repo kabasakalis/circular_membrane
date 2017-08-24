@@ -124,7 +124,7 @@ void Solution::generateData(float bessel_order_n, int root_order_m) {
     };
     // slice = newSurfaceDataArrayFromSource(base_surface_data_array, modifier);
     // m_timeSlices << slice;
-    m_timeSlices << newSurfaceDataArrayFromSource(base_surface_data_array, modifier);
+    m_timeSlices << *(newSurfaceDataArrayFromSource(base_surface_data_array, modifier));
   }  // slices
 
 

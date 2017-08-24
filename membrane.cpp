@@ -109,11 +109,24 @@ void Membrane::updateTimeSlice() {
   m_timeSliceIndex++;
   if (m_timeSliceIndex > m_solution.getTimeSlices().size() - 1)
     m_timeSliceIndex = 0;
+
+  auto timeslices =  m_solution.getTimeSlices();
+
   auto qsurface_data_array = m_solution.getTimeSlices().at(m_timeSliceIndex);
   auto modifier = [](QSurfaceDataItem item) -> void { item.position(); };
-  m_resetArray = new QSurfaceDataArray;
-  *m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
+
+  // m_resetArray = new QSurfaceDataArray;
+  // *m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
+  // m_membraneProxy->resetArray(m_resetArray);
+
+  // mQSurfaceDataArray m_resetArray;
+    auto m_resetArray= newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
+
+
   m_membraneProxy->resetArray(m_resetArray);
+
+
+
 }
 
 void Membrane::setSelectedBesselOrder( int n) {

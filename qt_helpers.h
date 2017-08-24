@@ -36,7 +36,7 @@ namespace qt_helpers {
 //  void clearSurfaceDataArray( QSurfaceDataArray& array);
 // }
 
- QSurfaceDataArray  newSurfaceDataArrayFromSource( QSurfaceDataArray& source_surface_data_array,
+ QSurfaceDataArray*  newSurfaceDataArrayFromSource( QSurfaceDataArray& source_surface_data_array,
                                                   std::function<void(QSurfaceDataItem)> modifier );
 
 
