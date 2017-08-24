@@ -55,7 +55,7 @@ Solution::Solution(int sampleCount, int timeSlicesCount, float radius,
 }
 
 Solution::~Solution() {
-  // clearData();
+  clearData();
 }
 
 float Solution::radius() const {
@@ -121,12 +121,12 @@ void Solution::generateData(float bessel_order_n, int root_order_m) {
     // slice.reserve(m_sampleCount);
     float t = qMin(sampleMaxT, (i * stepT + sampleMinT));
     auto temporal = temporal_solution(t, bessel_root);
-    auto modifier = [&temporal](QSurfaceDataItem item) -> void {
+    auto modifier = [&temporal](QSurfaceDataItem& item) -> void {
       item.setY(temporal * item.y());
     };
-    // slice = newSurfaceDataArrayFromSource(base_surface_data_array, modifier);
-    // m_timeSlices << slice;
-    m_timeSlices << *(newSurfaceDataArrayFromSource(base_surface_data_array, modifier));
+    auto slice = newSurfaceDataArrayFromSource(base_surface_data_array, modifier);
+    m_timeSlices << *slice;
+    // m_timeSlices << *(newSurfaceDataArrayFromSource(base_surface_data_array, modifier));
   }  // slices
 
 

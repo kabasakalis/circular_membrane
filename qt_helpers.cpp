@@ -48,7 +48,7 @@ namespace qt_helpers {
 
 
  QSurfaceDataArray*  newSurfaceDataArrayFromSource( QSurfaceDataArray& source_surface_data_array,
-                                                  std::function<void(QSurfaceDataItem)> modifier ){
+                                                  std::function<void(QSurfaceDataItem&)> modifier ){
   int sampleCount = source_surface_data_array.size();
   auto newArray = new QSurfaceDataArray();
   // QSurfaceDataArray newArray;
