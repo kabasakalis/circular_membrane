@@ -65,7 +65,7 @@ private:
   void activateNormalMode();
   void setUpUi();
   void setModeLabel();
-  Q3DSurface *m_graph;
+  Q3DSurface* m_graph;
   QSurfaceDataProxy *m_membraneProxy{0};
   QSurface3DSeries *m_membraneSeries{0};
   std::atomic<int> m_timeSliceIndex{0};

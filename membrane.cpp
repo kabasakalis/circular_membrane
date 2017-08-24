@@ -57,6 +57,7 @@ using namespace qt_helpers;
 
 Membrane::Membrane(Solution* solution)
     : m_graph(new Q3DSurface()),
+      m_membraneProxy(new QSurfaceDataProxy()),
       m_solution(solution),
       m_resetArray(0),
       m_selected_bessel_order{0.0f},
@@ -64,6 +65,7 @@ Membrane::Membrane(Solution* solution)
 {
   setUpUi();
   initializeGraph();
+  initializeSeries();
   activateNormalMode();
 
   QTimer *timer = new QTimer(this);
@@ -71,11 +73,13 @@ Membrane::Membrane(Solution* solution)
   timer->start(50);
 }
 
-Membrane::~Membrane() { delete m_graph; }
+Membrane::~Membrane() {
+  delete m_membraneSeries;
+  delete m_graph;
+  delete m_solution;
+}
 
 void Membrane::initializeSeries() {
-  m_graph->removeSeries(m_membraneSeries);
-  m_membraneProxy = new QSurfaceDataProxy();
   m_membraneSeries = new QSurface3DSeries(m_membraneProxy);
   m_membraneSeries->setName("Drumhead");
   m_membraneSeries->setDrawMode(QSurface3DSeries::DrawSurfaceAndWireframe);
@@ -109,30 +113,9 @@ void Membrane::updateTimeSlice() {
   m_timeSliceIndex++;
   if (m_timeSliceIndex > m_solution->getTimeSlices().size() - 1)
     m_timeSliceIndex = 0;
-
-  // qDebug <<    m_timeSliceIndex;
-  // qDebug <<   m_solution->getTimeSlices().size();
-  // auto timeslices =  m_solution->getTimeSlices();
-  qDebug() << "m_timeSliceIndex" << m_timeSliceIndex;
-  qDebug() << "m_timeSlices size:" << m_solution->getTimeSlices().size() ;
-
-
   auto qsurface_data_array = m_solution->getTimeSlices().at(m_timeSliceIndex);
   auto modifier = [](QSurfaceDataItem item) -> void { item.position(); };
-
-  m_resetArray = new QSurfaceDataArray;
-  m_resetArray = newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
-
-  m_membraneProxy->resetArray(m_resetArray);
-
-  // mQSurfaceDataArray m_resetArray;
-    // auto m_resetArray= newSurfaceDataArrayFromSource(qsurface_data_array, modifier);
-
-
-  // m_membraneProxy->resetArray(m_resetArray);
-
-
-
+  m_membraneProxy->resetArray(newSurfaceDataArrayFromSource(qsurface_data_array, modifier));
 }
 
 void Membrane::setSelectedBesselOrder( int n) {
@@ -144,7 +127,7 @@ void Membrane::setSelectedBesselRoot(int m) {
 }
 
 void Membrane::activateNormalMode() {
-  initializeSeries();
+  // initializeSeries();
   m_solution->generateData(m_selected_bessel_order, m_selected_bessel_root);
   setModeLabel();
 }
@@ -203,7 +186,7 @@ void Membrane::setUpUi() {
 
   QSpinBox *besselRootSbx = new QSpinBox(widget);
   besselRootSbx->setRange(1, 5000);
-  besselRootSbx->setPrefix("Bessel Root m:                       ");
+  besselRootSbx->setPrefix("Bessel Root m:                         ");
   normalModeVBox->addWidget(besselRootSbx);
 
   QPushButton *normalModeResetB = new QPushButton("&Reset Normal Mode", widget);

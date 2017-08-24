@@ -28,57 +28,27 @@
 
 namespace qt_helpers {
 
-//  QSurfaceDataArray* newSurfaceDataArrayFromSource( QSurfaceDataArray* source_surface_data_array,
-//                                                   std::function<void(QSurfaceDataItem*)> modifier ){
-//   int sampleCount = source_surface_data_array -> size();
-//   auto newArray = new QSurfaceDataArray();
-//   newArray->reserve(sampleCount);
-//   for (int i(0); i < sampleCount; i++)
-//    newArray -> append(new QSurfaceDataRow(sampleCount));
-//   for (int i(0); i < sampleCount; i++) {
-//     const QSurfaceDataRow& sourceRow = *(source_surface_data_array->at(i));
-//     QSurfaceDataRow& row = *(*newArray)[i];
-//     for (int j(0); j < sampleCount; j++){
-//       row[j].setPosition(sourceRow.at(j).position());
-//       modifier(&row[j]);
-//     }
-//   }
-// return newArray;
-//  };
-
-
- QSurfaceDataArray*  newSurfaceDataArrayFromSource( QSurfaceDataArray& source_surface_data_array,
-                                                  std::function<void(QSurfaceDataItem&)> modifier ){
+QSurfaceDataArray* newSurfaceDataArrayFromSource(
+    QSurfaceDataArray& source_surface_data_array,
+    std::function<void(QSurfaceDataItem&)> modifier) {
   int sampleCount = source_surface_data_array.size();
   auto newArray = new QSurfaceDataArray();
-  // QSurfaceDataArray newArray;
   newArray->reserve(sampleCount);
   for (int i(0); i < sampleCount; i++)
-   newArray->append(new QSurfaceDataRow(sampleCount));
+    newArray->append(new QSurfaceDataRow(sampleCount));
   for (int i(0); i < sampleCount; i++) {
     const QSurfaceDataRow& sourceRow = *(source_surface_data_array.at(i));
     QSurfaceDataRow& row = *(*newArray)[i];
-    for (int j(0); j < sampleCount; j++){
+    for (int j(0); j < sampleCount; j++) {
       row[j].setPosition(sourceRow.at(j).position());
       modifier(row[j]);
     }
   }
-return newArray;
- };
+  return newArray;
+};
 
-
-
-
-void clearSurfaceDataArray( QSurfaceDataArray& array)
-{
-    // for (int i(0); i < m_data.size(); i++) {
-        // QSurfaceDataArray &array = m_data[i];
-        for (int j(0); j < array.size(); j++)
-            delete array[j];
-        array.clear();
-    // }
+void clearSurfaceDataArray(QSurfaceDataArray& array) {
+  for (int j(0); j < array.size(); j++) delete array[j];
+  array.clear();
 }
-
-
-
 }

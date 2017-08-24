@@ -31,15 +31,8 @@
 using namespace QtDataVisualization;
 
 namespace qt_helpers {
-
-//  QSurfaceDataArray* newSurfaceDataArrayFromSource(QSurfaceDataArray* source_surface_data_array, std::function<void(QSurfaceDataItem*)> modifier );
-//  void clearSurfaceDataArray( QSurfaceDataArray& array);
-// }
-
- QSurfaceDataArray*  newSurfaceDataArrayFromSource( QSurfaceDataArray& source_surface_data_array,
+QSurfaceDataArray*  newSurfaceDataArrayFromSource( QSurfaceDataArray& source_surface_data_array,
                                                   std::function<void(QSurfaceDataItem&)> modifier );
-
-
 void clearSurfaceDataArray( QSurfaceDataArray& array);
 }
 
