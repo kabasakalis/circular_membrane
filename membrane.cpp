@@ -127,7 +127,6 @@ void Membrane::setSelectedBesselRoot(int m) {
 }
 
 void Membrane::activateNormalMode() {
-  // initializeSeries();
   m_solution->generateData(m_selected_bessel_order, m_selected_bessel_root);
   setModeLabel();
 }
@@ -207,11 +206,11 @@ void Membrane::setUpUi() {
   modeItemRB->setChecked(false);
 
   QRadioButton *modeSliceRowRB = new QRadioButton(widget);
-  modeSliceRowRB->setText(QStringLiteral("Row Slice"));
+  modeSliceRowRB->setText(QStringLiteral("Theta Slice"));
   modeSliceRowRB->setChecked(true);
 
   QRadioButton *modeSliceColumnRB = new QRadioButton(widget);
-  modeSliceColumnRB->setText(QStringLiteral("Column Slice"));
+  modeSliceColumnRB->setText(QStringLiteral("Radial Slice"));
   modeSliceColumnRB->setChecked(false);
 
   QVBoxLayout *selectionVBox = new QVBoxLayout;
