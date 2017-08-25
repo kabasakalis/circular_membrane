@@ -21,7 +21,10 @@ Only dependency is Boost framework which must be installed in your system.
 You must provide the boost include path in Qt's `circular_membrane.pro` file.
 
 ### Screenshots
+![screenshot](https://github.com/drumaddict/circular_membrane/blob/master/images/modes_1200.jpg)
 
+### Video
+[![Normal modes of a vibrating circular membrane ](https://youtu.be/DZ8VGAx4178)](https://github.com/drumaddict/circular_membrane/blob/master/images/yt_thumb.jpg)
 
 ## License
  [MIT License](http://opensource.org/licenses/MIT).

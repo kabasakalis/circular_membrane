@@ -29,7 +29,7 @@
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    Solution* solution= new Solution(25,50, 20.0f, 200);
+    Solution* solution= new Solution(200, 50, 20.0f, 200);
     Membrane  membrane{solution};
     return app.exec();
 }
