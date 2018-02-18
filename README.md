@@ -24,7 +24,7 @@ You must provide the boost include path in Qt's `circular_membrane.pro` file.
 ![screenshot](https://github.com/drumaddict/circular_membrane/blob/master/images/modes_1200.jpg)
 
 ### Video
-[![Normal modes of a vibrating circular membrane ](https://github.com/drumaddict/circular_membrane/blob/master/images/yt_thumb.jpg)](https://www.youtube.com/watch?v=DZ8VGAx4178)
+[![Normal modes of a vibrating circular membrane ](https://github.com/drumaddict/circular_membrane/blob/master/images/yt_thumb.jpg)](https://drive.google.com/file/d/1bFcG1fZoJCUWTkpMjOt5BGw9Rrj3IOVy/view)
 
 ## License
  [MIT License](http://opensource.org/licenses/MIT).
